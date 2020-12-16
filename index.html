@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVExchange Giveaway Table Builder</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="match.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <p class="span-three-cols">
+        Paste your KeySAVe dump.<br>
+        The CSV format is for pasting into spreadsheets.
+    </p>
+
+    <fieldset>
+        <legend>Generation</legend>
+        <label>Gen 6
+            <input type="radio" name="gen" id="gen6" value="6">
+        </label>
+        <br>
+        <label>Gen 7
+            <input type="radio" name="gen" id="gen7" value="7" checked>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Output format</legend>
+        <label>CSV
+            <input type="radio" name="outputFormat" id="csv" value="csv">
+        </label>
+        <br>
+        <label>Reddit table
+            <input type="radio" name="outputFormat" id="redditTable" value="redditTable" checked>
+        </label>
+    </fieldset>
+
+    <label>Hide eggs without matching TSVs
+        <input type="checkbox" name="hideNonMatch" id="hideNonMatch" value="true">
+    </label>
+
+    <label class="span-three-cols" for="keySAVeDump">Enter your KeySAVe dump:</label>
+    <textarea class="span-three-cols textarea black-bg" type="text" name="KeySAVeDump" id="KeySAVeDump"></textarea>
+
+    <button class="span-three-cols" type=button id="copyOutput" hidden>Copy output to clipboard</button>
+    <textarea class="span-three-cols textarea output" id="output" readonly hidden></textarea>
+</div>
+
+</body>
+</html>

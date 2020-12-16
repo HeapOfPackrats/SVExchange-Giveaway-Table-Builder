@@ -1,0 +1,42 @@
+body {
+    background-color: #fcfcfc;
+}
+
+.container {
+    display: grid;
+    margin: auto;
+    width: 80%;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px 30px;
+}
+
+.span-three-cols {
+    grid-column: 1 / span 4;
+}
+
+.textarea {
+    border: none;
+    border-radius: 3px;
+    font: 400 13.3333px Arial;
+    height: 10rem;
+    resize: none;
+}
+
+.black-bg {
+    background-color: #0a0a0a;
+    color: #e7e7e7;
+}
+
+.black-bg::placeholder {  
+    color: #e7e7e7;   
+}
+
+.output {
+    background-color: inherit;
+    color:#0a0a0a;
+}
+
+.output:focus {
+    outline: none !important;
+    border: none;
+}
