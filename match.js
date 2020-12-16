@@ -107,7 +107,7 @@ function matchUsersToEggs(eggs, TSVs, gen) {
         if (re.test(eggs[i])) { //we reach egg data before a header; header likely doesn't exist
             start = i;
             break;
-        } else if (/Box|Slot|Species|Nature|Ability|HP.ATK.DEF.SPATK.SPDEF.SPE|HP|ESV/.test(eggs[i])) {
+        } else if (/\bBox\b|\bSlot\b|\bSpecies\b|\bNature\b|\bAbility\b|\bHP.ATK.DEF.SPATK.SPDEF.SPE\b|\bHP\b|\bESV\b/.test(eggs[i])) {
             header = eggs[i];
             start = i+1;
             break;
