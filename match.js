@@ -126,7 +126,7 @@ function matchUsersToEggs(eggs, TSVs, gen) {
             eggs[i] = {egg: {info: eggs[i], esv: String(esv)}, users: TSVs[esv].map(thread => thread)};
         }
     }
-    eggs = eggs.filter(e => typeof e === "object" ); //remove whitespace and junk lines
+    eggs = eggs.filter(e => typeof e === "object"); //remove whitespace and junk lines
     console.log("Matched Eggs:", eggs);
     console.log("Header:\n", header);
     //{ header: "", eggs: [{egg: {info: "", esv: ####}, users: [{user: "", link: ""}]}] }
@@ -137,7 +137,7 @@ function matchUsersToEggs(eggs, TSVs, gen) {
 //transforms and outputs the info as HTML
 function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
     let {header, eggs} = parsedEggs;
-    let output = [header].concat[eggs]; //build an array of strings to print out line-by-line
+    let output = [header].concat(eggs); //build an array of strings to print out line-by-line
 
     //remove eggs that do not have matching users
     if (hideNonMatch) {
@@ -146,15 +146,19 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
 
     //determine the separator in the egg data or default to "|"
     //a KeySAVe output should have a sep = " - " or " | " or ","
-    let sep = /( ?\W(?:\||-|,) ?)/.exec(eggs[0].egg.info);
-    sep = (sep === null) ? "\\|" : sep[1];
+    let sep = /\W([|-])\W/.exec(eggs[0].egg.info) || /\D(,)\D/.exec(eggs[0].egg.info);
+    sep = (sep === null || sep === "|") ? "\|" : sep[1];
     let colCount;
     try {
-        colCount = eggs[0].egg.info.match(RegExp("(?!^)" + sep + "(?:\\w{2,}|\\d,\\d)", "g")).length + 1;
+        let rawSep = String.raw`${sep}`;
+        console.log(rawSep);
+        colCount = eggs[0].egg.info.match(RegExp(`(?:${rawSep}|^)([\\w .♂♀()[\\]]{2,}?|(?: ?\\d,\\d ?))(?=${rawSep}|$)`, "gm")).length;
     }
-    catch {
+    catch(err) {
         colCount = 1;
+        console.log(err);
     }
+    console.log(`sep: ${sep}, colCount: ${colCount}`);
 
     //check whether header row exists. if false, unshift a header with blank labels
     //then append a "Matches" column to the row
@@ -198,6 +202,6 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
         output.splice(1,0,`|${Array(colCount).fill("----").join("|")}|`);
     }
 
-    console.log(output.join('\n'));
+    //console.log(output.join('\n'));
     document.getElementById("output").innerHTML = output.join("\n");
 }
