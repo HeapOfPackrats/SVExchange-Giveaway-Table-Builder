@@ -137,70 +137,74 @@ function matchUsersToEggs(eggs, TSVs, gen) {
 //transforms and outputs the info as HTML
 function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
     let {header, eggs} = parsedEggs;
-    let output = [header].concat(eggs); //build an array of strings to print out line-by-line
-
     //remove eggs that do not have matching users
     if (hideNonMatch) {
         eggs = eggs.filter(e => e.users);
     }
+    let output; //build an array of strings to print out line-by-line
 
     //determine the separator in the egg data or default to "|"
     //a KeySAVe output should have a sep = " - " or " | " or ","
     let sep = /\W([|-])\W/.exec(eggs[0].egg.info) || /\D(,)\D/.exec(eggs[0].egg.info);
-    sep = (sep === null || sep === "|") ? "\|" : sep[1];
+    sep = (sep === null) ? "|" : sep[1]; 
+    let sepRe = (sep === "|") ? String.raw`\|(\W|$)` : String.raw`${sep}` //"|" is a regex special char
     let colCount;
     try {
-        let rawSep = String.raw`${sep}`;
-        console.log(rawSep);
-        colCount = eggs[0].egg.info.match(RegExp(`(?:${rawSep}|^)([\\w .♂♀()[\\]]{2,}?|(?: ?\\d,\\d ?))(?=${rawSep}|$)`, "gm")).length;
+        colCount = eggs[0].egg.info.match(RegExp(`(?:${sepRe}|^)([\\w .♂♀()[\\]]{2,}?|(?: ?\\d,\\d ?))(?=${sepRe}|$)`, "gm")).length;
     }
     catch(err) {
         colCount = 1;
         console.log(err);
     }
-    console.log(`sep: ${sep}, colCount: ${colCount}`);
+    console.log(`sep: ${sep}, sepRe: ${sepRe} colCount: ${colCount}`);
 
-    //check whether header row exists. if false, unshift a header with blank labels
-    //then append a "Matches" column to the row
+    //check whether header is a blank string. if true, add a new header with blank labels
+    //in either case, append a "Matches" column to the header row
     if (header === "") {
         output = [(Array(colCount).fill("label").join(sep))];
     } else {
         output = [header];
     }
-    output[0] += sep + "Matches";
+    output[0] += (sep === "|") ? " Matches" : (sep + " Matches");
     colCount += 1;
 
     //modify output to fit outputFormat (csv or Reddit table)
     if (outputFormat === "csv") {
         output = output.concat(eggs.map((x) => {
-            let line = `${x.egg.info}${sep}`
-                .replace(/(\W)(\d,\d)/,"$1\"$2\"") //wrap row,col values in quotation marks
-                .replaceAll(sep, ",");
+            let line = (sep === "|") ? `${x.egg.info}` : `${x.egg.info}${sep}`;
+            line = line.replace(/(\W)(\d,\d)/,"$1\"$2\"") //wrap row,col values in quotation marks for csv
+                       .replaceAll(RegExp(` ?${sepRe} ?`, "g"), ",")
+                       .replace(/^,/, ""); //trim off any leading commas
             if (x.users) {
                 line += `"${x.users.filter(y => y.archived === false).map(y => y.user).join(", ")}"`;
             }
             return line;
         }));
-        output[0] = output[0].replaceAll(sep, ",");
+        output[0] = output[0].replaceAll(RegExp(` ?${sepRe} ?`, "g"), ",").replace(/^,/, "");
     } else if (outputFormat === "redditTable") {
         output = output.concat(eggs.map((x) => {
-            let line = `| ${x.egg.info}${sep}`
-                .replaceAll(sep, " | ")
+            let line = (sep === "|") ? `${x.egg.info}` : `| ${x.egg.info}${sep}`
+                .replace(/(\W)(\d,\d)/,"$1\"$2\"")
+                .replaceAll(RegExp(` ?${sepRe}(?!\\d") ?`, "g"), " | ")
+                .replace(/"(\d,\d)"/,"$1")
                 .trim();
             if (x.users) {
                 line += x.users
                     .filter(y => y.archived === false)
                     .map(y => ` [${y.user}](/r/SVExchange/comments/${y.link}/${x.egg.esv.padStart(4, "0")})`)
-                    .join(", ");
+                    .join(", ")
+                    .concat(" |");
             }
-            line += " |";
             return line;
         }));
-        output[0] = `| ${output[0].replaceAll(sep, " | ")} |`;
-        console.log(output);
+        output[0] = (sep === "|") ? 
+            `${output[0].replaceAll(RegExp(` ?${sepRe} ?`, "g"), " | ")} |`.trim():
+            `| ${output[0].replaceAll(RegExp(` ?${sepRe} ?`, "g"), " | ")} |`;
+
         //add marker row required by Reddit markdown for tables
         output.splice(1,0,`|${Array(colCount).fill("----").join("|")}|`);
     }
+    console.log(eggs);
 
     //console.log(output.join('\n'));
     document.getElementById("output").innerHTML = output.join("\n");
