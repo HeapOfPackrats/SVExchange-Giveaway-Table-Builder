@@ -165,10 +165,13 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
     //in either case, append a "Matches" column to the header row
     if (header === "") {
         output = [(Array(colCount).fill("label").join(sep))];
+        if (sep === "|") {
+            output[0] = `| ${output[0]} |`.replaceAll(/\|(?!$)/g, " | ");
+        }
     } else {
         output = [header];
     }
-    output[0] += (sep === "|") ? " Matches" : (sep + " Matches");
+    output[0] += (sep === "|") ? " Matches" : (sep + " Matches"); //account for trailing sep if Reddit table style header is included
     colCount += 1;
 
     //modify output to fit outputFormat (csv or Reddit table)
