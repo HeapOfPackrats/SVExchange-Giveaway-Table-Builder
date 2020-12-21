@@ -148,7 +148,7 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
 
     //determine the separator in the egg data or default to "|"
     //a KeySAVe output should have a sep = " - " or " | " or ","
-    let sep = /\W([|-])\W/.exec(eggs[0].egg.info) || /\D(,)\D/.exec(eggs[0].egg.info);
+    let sep = /\W([|-])\W/.exec(eggs[0].egg.info) || /\D ?(,) ?\w/.exec(eggs[0].egg.info);
     sep = (sep === null) ? "|" : sep[1]; 
     let sepRe = (sep === "|") ? String.raw`\|(\W|$)` : String.raw`${sep}` //"|" is a regex special char
     let colCount;
