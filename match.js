@@ -140,6 +140,9 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
     //remove eggs that do not have matching users
     if (hideNonMatch) {
         eggs = eggs.filter(e => e.users);
+        if (eggs.length === 0) {
+            document.getElementById("output").innerHTML = "No matches";
+        }
     }
     let output; //build an array of strings to print out line-by-line
 
