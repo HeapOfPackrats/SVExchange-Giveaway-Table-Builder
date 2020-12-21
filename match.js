@@ -198,7 +198,7 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
                 line += x.users
                     .filter(y => y.archived === false)
                     .map(y => ` [${y.user}](/r/SVExchange/comments/${y.link}/${x.egg.esv.padStart(4, "0")})`)
-                    .join(", ");
+                    .join(",");
             }
             line = `${line} |`;
             return line;
