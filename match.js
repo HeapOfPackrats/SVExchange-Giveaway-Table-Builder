@@ -191,7 +191,7 @@ function printGiveawayOutput(parsedEggs, outputFormat, hideNonMatch=false) {
         output = output.concat(eggs.map((x) => {
             let line = (sep === "|") ? `${x.egg.info}` : `| ${x.egg.info}${sep}`
                 .replace(/(\W)(\d,\d)/,"$1\"$2\"")
-                .replaceAll(RegExp(` ?${sepRe}(?!\\d") ?`, "g"), " | ")
+                .replaceAll(RegExp(` ?${sepRe}(?!\\d"|\\)) ?`, "g"), " | ")
                 .replace(/"(\d,\d)"/,"$1")
                 .trim();
             if (x.users) {
